@@ -75,9 +75,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, category, Toast.LENGTH_LONG).show();
 
 
-                    /*Intent content = new Intent(MainActivity.this, Content.class);
+                    Intent content = new Intent(MainActivity.this, Content.class);
                     content.putExtra("category", category );
-                    startActivity(content);*/
+                    startActivity(content);
 
                 }
             });

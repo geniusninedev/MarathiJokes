@@ -8,15 +8,23 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.util.List;
+
+import id.zelory.compressor.Compressor;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 
 public class CategoryAdapter extends ArrayAdapter<MarathiJokesCategory> {
     Context mContext;
 
     int mLayoutResourceId;
-
+    public List<MarathiJokesCategory> mCategory;
     public CategoryAdapter(Context context, int resource){
         super(context, resource);
         mContext = context;
@@ -40,6 +48,7 @@ public class CategoryAdapter extends ArrayAdapter<MarathiJokesCategory> {
 
         final ImageView imageViewCategory = (ImageView) row.findViewById(R.id.imageViewCategory);
         Picasso.with(mContext).load(currentItem.getImagelink()).transform(new CircleTransform()).into(imageViewCategory);
+
 
         return row;
 
