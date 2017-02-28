@@ -6,7 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 
 public class CategoryAdapter extends ArrayAdapter<MarathiJokesCategory> {
@@ -34,6 +37,9 @@ public class CategoryAdapter extends ArrayAdapter<MarathiJokesCategory> {
 
         final TextView textViewCategory = (TextView)row.findViewById(R.id.textViewCategories);
         textViewCategory.setText(currentItem.getCategory());
+
+        final ImageView imageViewCategory = (ImageView) row.findViewById(R.id.imageViewCategory);
+        Picasso.with(mContext).load(currentItem.getImagelink()).transform(new CircleTransform()).into(imageViewCategory);
 
         return row;
 

@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                     Map<String, ColumnDataType> tableDefinition = new HashMap<String, ColumnDataType>();
                     tableDefinition.put("id", ColumnDataType.String);
                     tableDefinition.put("category", ColumnDataType.String);
-                    //tableDefinition.put("content", ColumnDataType.String);
+                    tableDefinition.put("imagelink", ColumnDataType.String);
 
                     localStore.defineTable("MarathiJokesCategory", tableDefinition);
 

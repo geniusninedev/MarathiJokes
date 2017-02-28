@@ -10,6 +10,10 @@ public class MarathiJokesCategory {
     private String category;
     @com.google.gson.annotations.SerializedName("id")
     private  String id;
+    @com.google.gson.annotations.SerializedName("imagelink")
+    private String imagelink;
+
+
     public  MarathiJokesCategory(){
 
     }
@@ -28,5 +32,13 @@ public class MarathiJokesCategory {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getImagelink() {
+        return imagelink;
+    }
+
+    public void setImagelink(String imagelink) {
+        this.imagelink = imagelink;
     }
 }
