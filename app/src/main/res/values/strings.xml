@@ -2,4 +2,5 @@
     <string name="app_name">Marathi Jokes</string>
     <string name="banner_ad_unit_id">>ca-app-pub-3940256099942544/6300978111</string>
     <string name="test_admob_app_id">ca-app-pub-6819279779322408~8184820176</string>
+    <string name="test_admob_express_unit_id">ca-app-pub-6819279779322408/2138286570</string>
 </resources>

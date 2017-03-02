@@ -1,15 +1,22 @@
 package com.geniusnine.android.marathijokes;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.clockbyte.admobadapter.AdmobRecyclerAdapterWrapper;
+import com.clockbyte.admobadapter.expressads.AdmobExpressRecyclerAdapterWrapper;
+import com.clockbyte.admobadapter.expressads.NativeExpressAdViewHolder;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.NativeExpressAdView;
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.microsoft.windowsazure.mobileservices.http.OkHttpClientFactory;
 import com.microsoft.windowsazure.mobileservices.table.query.Query;
@@ -41,7 +48,7 @@ public class Content extends AppCompatActivity {
 
 
     private ArrayList<MarathiJokesContent> items = new ArrayList<>();
-    AdmobRecyclerAdapterWrapper adapterWrapper;
+    AdmobExpressRecyclerAdapterWrapper adapterWrapper;
     Timer updateAdsTimer;
 
     @Override
@@ -191,7 +198,31 @@ public class Content extends AppCompatActivity {
         recyclerViewContents = (RecyclerView) findViewById(R.id.recyclerViewContent);
         recyclerViewContents.setLayoutManager(new LinearLayoutManager(this));
         contentAdapter = new ContentAdapter(this, items);
-        adapterWrapper = new AdmobRecyclerAdapterWrapper(this, getString(R.string.test_admob_app_id));
+        adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this, getString(R.string.test_admob_express_unit_id)){
+
+            @Override
+            protected ViewGroup wrapAdView(NativeExpressAdViewHolder adViewHolder, ViewGroup parent, int viewType) {
+
+                //get ad view
+                NativeExpressAdView adView = adViewHolder.getAdView();
+
+                RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
+                        RecyclerView.LayoutParams.WRAP_CONTENT);
+                CardView cardView = new CardView(Content.this);
+                cardView.setLayoutParams(lp);
+
+                TextView textView = new TextView(Content.this);
+                textView.setLayoutParams(lp);
+                textView.setText("Ad is loading...");
+                textView.setTextColor(Color.RED);
+
+                cardView.addView(textView);
+                //wrapping
+                cardView.addView(adView);
+                //return wrapper view
+                return cardView;
+            }
+        };
         adapterWrapper.setAdapter(contentAdapter);
         adapterWrapper.setLimitOfAds(100);
         adapterWrapper.setNoOfDataBetweenAds(1);
@@ -207,10 +238,15 @@ public class Content extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapterWrapper.requestUpdateAd();
+                        //adapterWrapper.requestUpdateAd();
                     }
                 });
             }
         }, 60 * 1000, 60 * 1000);
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        adapterWrapper.release();
     }
 }
