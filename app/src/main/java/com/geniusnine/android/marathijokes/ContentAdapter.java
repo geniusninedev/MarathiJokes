@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.clockbyte.admobadapter.ViewWrapper;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,54 +18,34 @@ import java.util.List;
  * Created by AndriodDev8 on 20-02-2017.
  */
 
-public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentViewHolder> {
+public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public List<MarathiJokesContent> mContent;
+    private ArrayList<MarathiJokesContent> items = new ArrayList<>();
 
 
-    private Context mContext;
+    private Context context;
 
-    public ContentAdapter(Context mContext,List<MarathiJokesContent> mContent) {
-        this.mContent = new ArrayList<>();
-        this.mContext = mContext;
+    public ContentAdapter(Context context, ArrayList<MarathiJokesContent> items) {
+        this.items = items;
+        this.context = context;
     }
 
     @Override
-    public ContentAdapter.ContentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-
-        // Inflate the custom layout
-        View contentView = inflater.inflate(R.layout.row_list_content, parent, false);
-
-        // Return a new holder instance
-        ContentViewHolder viewHolder = new ContentViewHolder(contentView);
-        return viewHolder;
+    public ViewWrapper<ContentHolder> onCreateViewHolder(ViewGroup parent, int viewType){
+        return new ViewWrapper<ContentHolder>(new ContentHolder(context));
     }
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position){
+        ContentHolder contentHolder = (ContentHolder)viewHolder.itemView;
+        MarathiJokesContent item = items.get(position);
+        contentHolder.bind(item.getContent());
+    }
+
 
     @Override
-    public void onBindViewHolder(ContentAdapter.ContentViewHolder holder, int position) {
-        MarathiJokesContent Contents = mContent.get(position);
-        TextView textView = holder.textViewContent;
-        textView.setText(Contents.getContent());
+    public int getItemCount(){
+        return  items.size();
     }
 
-    @Override
-    public int getItemCount() {
-        return mContent.size();
-    }
 
-    public class ContentViewHolder extends RecyclerView.ViewHolder {
-
-        public TextView textViewContent;
-
-        public ContentViewHolder(View itemView) {
-            super(itemView);
-
-            textViewContent = (TextView) itemView.findViewById(R.id.textViewContent);
-
-
-         
-        }
-    }
 }
