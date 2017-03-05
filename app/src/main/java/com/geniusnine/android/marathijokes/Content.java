@@ -41,10 +41,10 @@ import java.util.concurrent.TimeUnit;
 
 public class Content extends AppCompatActivity {
 
-    private MobileServiceClient mClient;
+    private MobileServiceClient mobileServiceClient;
     private MobileServiceSyncTable<MarathiJokesContent> mobileServiceSyncTable;
     private ContentAdapter contentAdapter;
-    private RecyclerView recyclerViewContents;
+    private RecyclerView recyclerViewContent;
 
 
     private ArrayList<MarathiJokesContent> items = new ArrayList<>();
@@ -69,10 +69,10 @@ public class Content extends AppCompatActivity {
             // Create the Mobile Service Client instance, using the provided
 
             // Mobile Service URL and key
-            mClient = new MobileServiceClient("https://geniusnineapps.azurewebsites.net", this);
+            mobileServiceClient = new MobileServiceClient("https://geniusnineapps.azurewebsites.net", this);
 
             // Extend timeout from default of 10s to 20s
-            mClient.setAndroidHttpClientFactory(new OkHttpClientFactory() {
+            mobileServiceClient.setAndroidHttpClientFactory(new OkHttpClientFactory() {
                 @Override
                 public OkHttpClient createOkHttpClient() {
                     OkHttpClient client = new OkHttpClient();
@@ -83,7 +83,7 @@ public class Content extends AppCompatActivity {
             });
 
 
-            mobileServiceSyncTable = mClient.getSyncTable("MarathiJokesContent", MarathiJokesContent.class);
+            mobileServiceSyncTable = mobileServiceClient.getSyncTable("MarathiJokesContent", MarathiJokesContent.class);
             initLocalStore().get();
 
 
@@ -105,12 +105,12 @@ public class Content extends AppCompatActivity {
             protected Void doInBackground(Void... params) {
                 try {
 
-                    MobileServiceSyncContext syncContext = mClient.getSyncContext();
+                    MobileServiceSyncContext syncContext = mobileServiceClient.getSyncContext();
 
                     if (syncContext.isInitialized())
                         return null;
 
-                    SQLiteLocalStore localStore = new SQLiteLocalStore(mClient.getContext(), "OfflineStore", null, 1);
+                    SQLiteLocalStore localStore = new SQLiteLocalStore(mobileServiceClient.getContext(), "OfflineStore", null, 1);
 
                     Map<String, ColumnDataType> tableDefinition = new HashMap<String, ColumnDataType>();
                     tableDefinition.put("id", ColumnDataType.String);
@@ -182,7 +182,7 @@ public class Content extends AppCompatActivity {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    MobileServiceSyncContext syncContext = mClient.getSyncContext();
+                    MobileServiceSyncContext syncContext = mobileServiceClient.getSyncContext();
                     syncContext.push().get();
                     mobileServiceSyncTable.pull(null).get();
                 } catch (final Exception e) {
@@ -195,8 +195,8 @@ public class Content extends AppCompatActivity {
     }
 
     private void dataBinder() {
-        recyclerViewContents = (RecyclerView) findViewById(R.id.recyclerViewContent);
-        recyclerViewContents.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewContent = (RecyclerView) findViewById(R.id.recyclerViewContent);
+        recyclerViewContent.setLayoutManager(new LinearLayoutManager(this));
         contentAdapter = new ContentAdapter(this, items);
         adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this, getString(R.string.test_admob_express_unit_id)){
 
@@ -227,7 +227,7 @@ public class Content extends AppCompatActivity {
         adapterWrapper.setLimitOfAds(100);
         adapterWrapper.setNoOfDataBetweenAds(1);
         adapterWrapper.setFirstAdIndex(2);
-        recyclerViewContents.setAdapter(adapterWrapper);
+        recyclerViewContent.setAdapter(adapterWrapper);
     }
 
     private void initUpdateAdsTimer() {

@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * Created by Supriya on 28-02-2017.
+ * this is to round cut images and focus to center
  */
 public class CircleTransform implements Transformation {
     private static Bitmap createRoundedRectBitmap(Bitmap bitmap,

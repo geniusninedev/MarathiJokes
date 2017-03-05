@@ -36,7 +36,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textViewCategories"
+                android:id="@+id/textViewCategory"
                 android:textSize="30sp"
                 android:textStyle="bold"
                 android:paddingTop="7sp"

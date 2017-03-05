@@ -18,17 +18,17 @@ import java.util.List;
 import id.zelory.compressor.Compressor;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
+//This is to connect app category data to Main activity list view
 
 public class CategoryAdapter extends ArrayAdapter<MarathiJokesCategory> {
-    Context mContext;
+    Context context;
 
-    int mLayoutResourceId;
+    int layoutResourceId;
     public List<MarathiJokesCategory> mCategory;
     public CategoryAdapter(Context context, int resource){
         super(context, resource);
-        mContext = context;
-        mLayoutResourceId = resource;
+        this.context = context;
+        layoutResourceId = resource;
 
     }
 
@@ -37,17 +37,17 @@ public class CategoryAdapter extends ArrayAdapter<MarathiJokesCategory> {
         View row = convertView;
         final MarathiJokesCategory currentItem = getItem(position);
         if (row == null) {
-            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(R.layout.row_list_category, parent, false);
 
         }
         row.setTag(currentItem);
 
-        final TextView textViewCategory = (TextView)row.findViewById(R.id.textViewCategories);
+        final TextView textViewCategory = (TextView)row.findViewById(R.id.textViewCategory);
         textViewCategory.setText(currentItem.getCategory());
 
         final ImageView imageViewCategory = (ImageView) row.findViewById(R.id.imageViewCategory);
-        Picasso.with(mContext).load(currentItem.getImagelink()).transform(new CircleTransform()).into(imageViewCategory);
+        Picasso.with(context).load(currentItem.getImagelink()).transform(new CircleTransform()).into(imageViewCategory);
 
 
         return row;

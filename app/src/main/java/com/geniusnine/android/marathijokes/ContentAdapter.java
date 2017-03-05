@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * Created by AndriodDev8 on 20-02-2017.
+ * this is adapter to connect data to content activity
  */
 
 public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

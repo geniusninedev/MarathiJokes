@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 /**
  * Created by Dev on 03-03-2017.
+ * this is to hold recycler view content
  */
 
 public class ContentHolder extends FrameLayout {
