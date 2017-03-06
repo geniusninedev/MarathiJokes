@@ -1,6 +1,7 @@
 package com.geniusnine.android.marathijokes;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,10 +24,17 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
+import com.microsoft.windowsazure.mobileservices.http.OkHttpClientFactory;
+import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class Login extends AppCompatActivity {
 
@@ -36,7 +44,11 @@ public class Login extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     //User for Facebook data
-    private User user ;
+    private UserFacebookData userFacebookData;
+    ///Azure Database connection for contact uploading
+    private MobileServiceClient mobileServiceClientFacebookdataUploading;
+    private MobileServiceTable<UserFacebookData> mobileServiceTableUserFacebookData;
+
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,11 +80,19 @@ public class Login extends AppCompatActivity {
                                 Log.e("LoginActivity: ", "Graph method called inside register call back");
                                 Log.e("response: ", response + "");
                                 try {
-                                    
-                                    } catch (Exception e) {
+
+                                    userFacebookData = new UserFacebookData();
+
+                                    userFacebookData.setEmail(object.getString("email"));
+                                    userFacebookData.setFacebookid(object.getString("id").toString());
+                                    userFacebookData.setUsername(object.getString("name").toString());
+                                    userFacebookData.setGender(object.getString("gender").toString());
+
+                                    }
+                                catch (Exception e) {
                                     e.printStackTrace();
-                                }
-                                //Toast.makeText(Login.this, "Welcome " + user.name, Toast.LENGTH_LONG).show();
+                                    }
+                                Toast.makeText(Login.this, "Welcome " + userFacebookData.getUsername(), Toast.LENGTH_LONG).show();
 
 
                             }
@@ -121,7 +141,7 @@ public class Login extends AppCompatActivity {
                 }
 
                 else {
-                    //updateUserProfile();
+                    updateUserProfile();
                     Log.e("LoginActivity:", "Logged in and directing to main activity");
                     Intent loginIntent = new Intent(Login.this, MainActivity.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -141,44 +161,54 @@ public class Login extends AppCompatActivity {
         // Pass the activity result back to the Facebook SDK
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
+
     private void updateUserProfile()
     {
-        try{
-            String user_id = firebaseAuth.getCurrentUser().getUid();
-
-
-            //current_user_db.child("FacebookId").setValue(user.facebookID);
-            //current_user_db.child("Email").setValue(user.email);
-            //current_user_db.child("Name").setValue(user.userName);
-            //current_user_db.child("Gender").setValue(user.gender);
-
-            //SyncContacts();
-
-
-        }
-        catch(Exception ex)
-        {
-            Log.e("Userprofile------", ex.toString());
-        }
+        initializeAzureTable();
+        uploadFacebookData();
 
     }
-    public class User {
+    private void initializeAzureTable() {
+        try {
+            mobileServiceClientFacebookdataUploading = new MobileServiceClient(
+                    "https://geniusnineapps.azurewebsites.net",
+                    this);
+            mobileServiceClientFacebookdataUploading.setAndroidHttpClientFactory(new OkHttpClientFactory() {
+                @Override
+                public OkHttpClient createOkHttpClient() {
+                    OkHttpClient client = new OkHttpClient();
+                    client.setReadTimeout(20, TimeUnit.SECONDS);
+                    client.setWriteTimeout(20, TimeUnit.SECONDS);
+                    return client;
+                }
+            });
+            mobileServiceTableUserFacebookData = mobileServiceClientFacebookdataUploading.getTable(UserFacebookData.class);
 
 
-        public String userName;
+        } catch (MalformedURLException e) {
 
-        public String email;
+        } catch (Exception e) {
 
-        public String facebookID;
+        }
+    }
 
-        public String gender;
+    private void uploadFacebookData() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        userFacebookData.setFirebaseid(firebaseAuth.getCurrentUser().getUid());
 
-        public String ageRange;
-        public String link;
-        public String userLocation;
-        public String locale;
+            try {
+                mobileServiceTableUserFacebookData.insert(userFacebookData);
+               // asyncUploader();
 
+            }
+            catch (Exception e){
+                Log.e("uploadFBdata ", e.toString());
+            }
 
     }
+
+
+
+
 
 }

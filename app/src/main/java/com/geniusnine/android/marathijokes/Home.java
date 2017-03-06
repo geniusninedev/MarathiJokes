@@ -1,25 +1,30 @@
 package com.geniusnine.android.marathijokes;
 
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
+
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.microsoft.windowsazure.mobileservices.http.OkHttpClientFactory;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
@@ -32,6 +37,7 @@ import com.microsoft.windowsazure.mobileservices.table.sync.localstore.MobileSer
 import com.microsoft.windowsazure.mobileservices.table.sync.localstore.SQLiteLocalStore;
 import com.microsoft.windowsazure.mobileservices.table.sync.synchandler.SimpleSyncHandler;
 import com.squareup.okhttp.OkHttpClient;
+
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +46,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class Home extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
+
 
     //Azure connection and setting up of data adapter
     private MobileServiceClient mobileServiceClient;
@@ -54,12 +62,33 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListner;
 
-
+    //Setting up progress dialog
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
         authenticate();
         setupCategoryListView();//Setting up the category view
         uploadContactsToAzure();
@@ -69,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
     private void uploadContactsToAzure(){
 
 
-            initializeAzureTable();
-            fetchContacts();
-            uploadContact();
+        initializeAzureTable();
+        fetchContacts();
+        uploadContact();
 
 
     }
@@ -167,18 +196,18 @@ public class MainActivity extends AppCompatActivity {
 
     ///Authentication with firebase
     private void authenticate(){
-        firebaseAuth = FirebaseAuth.getInstance();        
+        firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuthListner = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser()==null){
                     Log.e("MainActivity:", "User was null so directed to Login activity");
-                    Intent loginIntent = new Intent(MainActivity.this, Login.class);
+                    Intent loginIntent = new Intent(Home.this, Login.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(loginIntent);
 
                 }
-                else {                   
+                else {
 
                 }
 
@@ -186,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
     }
-
 
     ///fetching data from Azure
     private void setupCategoryListView(){
@@ -209,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
             mobileServiceSyncTable =  mobileServiceClient.getSyncTable(getString(R.string.category_table_name), MarathiJokesCategory.class);
             initLocalStore().get();
             categoryAdapter = new CategoryAdapter(this, R.layout.row_list_category);
-            ListView listViewCategory = (ListView)findViewById(R.id.listViewCategory1);
+            ListView listViewCategory = (ListView)findViewById(R.id.listViewCategory);
             listViewCategory.setAdapter(categoryAdapter);
             listViewCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -219,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                     //Toast.makeText(MainActivity.this, category, Toast.LENGTH_LONG).show();
 
 
-                    Intent content = new Intent(MainActivity.this, Content.class);
+                    Intent content = new Intent(Home.this, Content.class);
                     content.putExtra("category", category );
                     startActivity(content);
 
@@ -297,6 +325,9 @@ public class MainActivity extends AppCompatActivity {
     }
     public void showAll() {
 
+        progressDialog = new ProgressDialog(Home.this);
+        progressDialog.setMessage("Syncing online data. You may turn off internet to avoid this.");
+        progressDialog.show();
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -314,6 +345,8 @@ public class MainActivity extends AppCompatActivity {
                             categoryAdapter.clear();
                             for (MarathiJokesCategory item : results) {
                                 categoryAdapter.add(item);
+                                progressDialog.dismiss();
+
                             }
                         }
                     });
@@ -339,9 +372,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
     @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.home, menu);
         return true;
     }
 
@@ -358,8 +401,31 @@ public class MainActivity extends AppCompatActivity {
             LoginManager.getInstance().logOut();
         }
 
-
-
         return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_forum) {
+            // Handle the camera action
+        } else if (id == R.id.nav_news) {
+
+        } else if (id == R.id.nav_app_store) {
+
+        } else if (id == R.id.nav_post_app) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

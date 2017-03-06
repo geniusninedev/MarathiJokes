@@ -1,5 +1,6 @@
 package com.geniusnine.android.marathijokes;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -21,6 +22,7 @@ import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.microsoft.windowsazure.mobileservices.http.OkHttpClientFactory;
 import com.microsoft.windowsazure.mobileservices.table.query.Query;
 import com.microsoft.windowsazure.mobileservices.table.query.QueryOperations;
+import com.microsoft.windowsazure.mobileservices.table.query.QueryOrder;
 import com.microsoft.windowsazure.mobileservices.table.sync.MobileServiceSyncContext;
 import com.microsoft.windowsazure.mobileservices.table.sync.MobileServiceSyncTable;
 import com.microsoft.windowsazure.mobileservices.table.sync.localstore.ColumnDataType;
@@ -50,6 +52,9 @@ public class Content extends AppCompatActivity {
     private ArrayList<MarathiJokesContent> items = new ArrayList<>();
     AdmobExpressRecyclerAdapterWrapper adapterWrapper;
     Timer updateAdsTimer;
+
+    //Setting up progress dialog
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +149,10 @@ public class Content extends AppCompatActivity {
 
 
     public void showAll(String cat) {
-        final String categoryId = cat;
+
+        progressDialog = new ProgressDialog(Content.this);
+        progressDialog.setMessage("Syncing online data. You may turn off internet to avoid this.");
+        progressDialog.show();final String categoryId = cat;
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
             @Override
@@ -153,7 +161,7 @@ public class Content extends AppCompatActivity {
                 try {
 
                     sync().get();
-                    Query query = QueryOperations.field("category").eq(categoryId);
+                    Query query = QueryOperations.field("category").eq(categoryId).orderBy("id", QueryOrder.Descending);
                     final List<MarathiJokesContent> results = mobileServiceSyncTable.read(query).get();
 
                     runOnUiThread(new Runnable() {
@@ -163,6 +171,7 @@ public class Content extends AppCompatActivity {
                             items.clear();
                             for (MarathiJokesContent item : results) {
                                 items.add(item);
+                                progressDialog.dismiss();
                             }
                             dataBinder();
                         }
