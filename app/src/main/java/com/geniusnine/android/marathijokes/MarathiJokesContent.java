@@ -4,7 +4,7 @@ package com.geniusnine.android.marathijokes;
  * Created by AndriodDev8 on 20-02-2017.
  */
 
-public class MarathiJokesContent {
+public class MarathiJokesContent {//Change the parameter
 
     @com.google.gson.annotations.SerializedName("id")
     private String id ;
@@ -13,7 +13,7 @@ public class MarathiJokesContent {
     @com.google.gson.annotations.SerializedName("content")
     private String content;
 
-    public MarathiJokesContent() {
+    public MarathiJokesContent() {//Change the parameter
     }
 
     public String getId() {

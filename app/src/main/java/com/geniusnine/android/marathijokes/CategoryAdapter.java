@@ -20,11 +20,11 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 //This is to connect app category data to Main activity list view
 
-public class CategoryAdapter extends ArrayAdapter<MarathiJokesCategory> {
+public class CategoryAdapter extends ArrayAdapter<MarathiJokesCategory> {//Change the parameter
     Context context;
 
     int layoutResourceId;
-    public List<MarathiJokesCategory> mCategory;
+    public List<MarathiJokesCategory> mCategory; //Change the parameter
     public CategoryAdapter(Context context, int resource){
         super(context, resource);
         this.context = context;
@@ -35,7 +35,7 @@ public class CategoryAdapter extends ArrayAdapter<MarathiJokesCategory> {
     @Override
     public View getView(int position, final View convertView, ViewGroup parent) {
         View row = convertView;
-        final MarathiJokesCategory currentItem = getItem(position);
+        final MarathiJokesCategory currentItem = getItem(position); //Change the parameter
         if (row == null) {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(R.layout.row_list_category, parent, false);

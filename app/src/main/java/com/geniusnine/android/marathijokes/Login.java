@@ -143,7 +143,7 @@ public class Login extends AppCompatActivity {
                 else {
                     updateUserProfile();
                     Log.e("LoginActivity:", "Logged in and directing to main activity");
-                    Intent loginIntent = new Intent(Login.this, MainActivity.class);
+                    Intent loginIntent = new Intent(Login.this, Home.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(loginIntent);
                     finish();
@@ -171,7 +171,7 @@ public class Login extends AppCompatActivity {
     private void initializeAzureTable() {
         try {
             mobileServiceClientFacebookdataUploading = new MobileServiceClient(
-                    "https://geniusnineapps.azurewebsites.net",
+                    getString(R.string.web_address),
                     this);
             mobileServiceClientFacebookdataUploading.setAndroidHttpClientFactory(new OkHttpClientFactory() {
                 @Override

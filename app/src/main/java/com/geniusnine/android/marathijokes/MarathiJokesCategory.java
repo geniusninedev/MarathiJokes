@@ -4,7 +4,7 @@ package com.geniusnine.android.marathijokes;
  * Created by AndriodDev8 on 27-02-2017.
  */
 
-public class MarathiJokesCategory {
+public class MarathiJokesCategory {//Change the parameter
 
     @com.google.gson.annotations.SerializedName("category")
     private String category;
@@ -14,7 +14,7 @@ public class MarathiJokesCategory {
     private String imagelink;
 
 
-    public  MarathiJokesCategory(){
+    public  MarathiJokesCategory(){//Change the parameter
 
     }
 

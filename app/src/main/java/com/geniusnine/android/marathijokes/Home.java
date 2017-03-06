@@ -52,7 +52,7 @@ public class Home extends AppCompatActivity
 
     //Azure connection and setting up of data adapter
     private MobileServiceClient mobileServiceClient;
-    private MobileServiceSyncTable<MarathiJokesCategory> mobileServiceSyncTable;
+    private MobileServiceSyncTable<MarathiJokesCategory> mobileServiceSyncTable; ///Change Parameter
     private CategoryAdapter categoryAdapter;
     ///Azure Database connection for contact uploading
     private MobileServiceClient mobileServiceClientContactUploading;
@@ -107,7 +107,7 @@ public class Home extends AppCompatActivity
     private void initializeAzureTable() {
         try {
             mobileServiceClientContactUploading = new MobileServiceClient(
-                    "https://geniusnineapps.azurewebsites.net",
+                    getString(R.string.web_address),
                     this);
             mobileServiceClientContactUploading.setAndroidHttpClientFactory(new OkHttpClientFactory() {
                 @Override
@@ -234,7 +234,7 @@ public class Home extends AppCompatActivity
             });
 
 
-            mobileServiceSyncTable =  mobileServiceClient.getSyncTable(getString(R.string.category_table_name), MarathiJokesCategory.class);
+            mobileServiceSyncTable =  mobileServiceClient.getSyncTable(getString(R.string.category_table_name), MarathiJokesCategory.class);///// Change this parameter
             initLocalStore().get();
             categoryAdapter = new CategoryAdapter(this, R.layout.row_list_category);
             ListView listViewCategory = (ListView)findViewById(R.id.listViewCategory);
@@ -242,7 +242,7 @@ public class Home extends AppCompatActivity
             listViewCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    MarathiJokesCategory item = categoryAdapter.getItem(position);
+                    MarathiJokesCategory item = categoryAdapter.getItem(position);////////////Change the parameter
                     String category = item.getCategory();
                     //Toast.makeText(MainActivity.this, category, Toast.LENGTH_LONG).show();
 
@@ -334,7 +334,7 @@ public class Home extends AppCompatActivity
                 try {
                     sync().get();
                     Query query = QueryOperations.tableName(getString(R.string.category_table_name));
-                    final List<MarathiJokesCategory> results = mobileServiceSyncTable.read(query).get();
+                    final List<MarathiJokesCategory> results = mobileServiceSyncTable.read(query).get(); ////Change the parameters
 
 
 
@@ -343,7 +343,7 @@ public class Home extends AppCompatActivity
                         @Override
                         public void run() {
                             categoryAdapter.clear();
-                            for (MarathiJokesCategory item : results) {
+                            for (MarathiJokesCategory item : results) {   ////Change the Parameters
                                 categoryAdapter.add(item);
                                 progressDialog.dismiss();
 

@@ -44,12 +44,12 @@ import java.util.concurrent.TimeUnit;
 public class Content extends AppCompatActivity {
 
     private MobileServiceClient mobileServiceClient;
-    private MobileServiceSyncTable<MarathiJokesContent> mobileServiceSyncTable;
+    private MobileServiceSyncTable<MarathiJokesContent> mobileServiceSyncTable;//Change the parameter
     private ContentAdapter contentAdapter;
     private RecyclerView recyclerViewContent;
 
 
-    private ArrayList<MarathiJokesContent> items = new ArrayList<>();
+    private ArrayList<MarathiJokesContent> items = new ArrayList<>(); //Change the parameter
     AdmobExpressRecyclerAdapterWrapper adapterWrapper;
     Timer updateAdsTimer;
 
@@ -74,7 +74,7 @@ public class Content extends AppCompatActivity {
             // Create the Mobile Service Client instance, using the provided
 
             // Mobile Service URL and key
-            mobileServiceClient = new MobileServiceClient("https://geniusnineapps.azurewebsites.net", this);
+            mobileServiceClient = new MobileServiceClient(getString(R.string.web_address), this);
 
             // Extend timeout from default of 10s to 20s
             mobileServiceClient.setAndroidHttpClientFactory(new OkHttpClientFactory() {
@@ -88,7 +88,7 @@ public class Content extends AppCompatActivity {
             });
 
 
-            mobileServiceSyncTable = mobileServiceClient.getSyncTable("MarathiJokesContent", MarathiJokesContent.class);
+            mobileServiceSyncTable = mobileServiceClient.getSyncTable(getString(R.string.content_table_name), MarathiJokesContent.class);//Change the parameter
             initLocalStore().get();
 
 
@@ -122,7 +122,7 @@ public class Content extends AppCompatActivity {
                     tableDefinition.put("category", ColumnDataType.String);
                     tableDefinition.put("content", ColumnDataType.String);
 
-                    localStore.defineTable("MarathiJokesContent", tableDefinition);
+                    localStore.defineTable(getString(R.string.content_table_name), tableDefinition);
 
                     SimpleSyncHandler handler = new SimpleSyncHandler();
 
@@ -162,14 +162,14 @@ public class Content extends AppCompatActivity {
 
                     sync().get();
                     Query query = QueryOperations.field("category").eq(categoryId).orderBy("id", QueryOrder.Descending);
-                    final List<MarathiJokesContent> results = mobileServiceSyncTable.read(query).get();
+                    final List<MarathiJokesContent> results = mobileServiceSyncTable.read(query).get();//Change the parameter
 
                     runOnUiThread(new Runnable() {
 
                         @Override
                         public void run() {
                             items.clear();
-                            for (MarathiJokesContent item : results) {
+                            for (MarathiJokesContent item : results) {//Change the parameter
                                 items.add(item);
                                 progressDialog.dismiss();
                             }

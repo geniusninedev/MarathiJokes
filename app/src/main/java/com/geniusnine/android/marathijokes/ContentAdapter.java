@@ -21,12 +21,12 @@ import java.util.List;
 
 public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private ArrayList<MarathiJokesContent> items = new ArrayList<>();
+    private ArrayList<MarathiJokesContent> items = new ArrayList<>(); //Change the parameter
 
 
     private Context context;
 
-    public ContentAdapter(Context context, ArrayList<MarathiJokesContent> items) {
+    public ContentAdapter(Context context, ArrayList<MarathiJokesContent> items) {//Change the parameter
         this.items = items;
         this.context = context;
     }
@@ -38,7 +38,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position){
         ContentHolder contentHolder = (ContentHolder)viewHolder.itemView;
-        MarathiJokesContent item = items.get(position);
+        MarathiJokesContent item = items.get(position);//Change the parameter
         contentHolder.bind(item.getContent());
     }
 
