@@ -42,12 +42,19 @@ public class Login extends AppCompatActivity {
     private LoginButton facebookLoginButton;
     private CallbackManager callbackManager;
     private FirebaseAuth firebaseAuth;
+    private FirebaseAuth firebaseAuthAppUser;
 
     //User for Facebook data
     private UserFacebookData userFacebookData;
     ///Azure Database connection for contact uploading
     private MobileServiceClient mobileServiceClientFacebookdataUploading;
     private MobileServiceTable<UserFacebookData> mobileServiceTableUserFacebookData;
+
+    ///Azure Database connection for AppUser Uploading
+
+    private AppUsers appUsers;
+    private MobileServiceClient mobileServiceClientAppUsersUploading;
+    private  MobileServiceTable<AppUsers> mobileServiceTableAppUsers;
 
     
     @Override
@@ -142,6 +149,7 @@ public class Login extends AppCompatActivity {
 
                 else {
                     updateUserProfile();
+                    uploadAppUsersDataToAzure();
                     Log.e("LoginActivity:", "Logged in and directing to main activity");
                     Intent loginIntent = new Intent(Login.this, Home.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -208,7 +216,52 @@ public class Login extends AppCompatActivity {
     }
 
 
+//Upload App Users data
+
+    private void uploadAppUsersDataToAzure(){
+        initializeAzureTableAppUsers();
+        uploadAppUserData();
+    }
+
+    private void initializeAzureTableAppUsers(){
+        try {
+            mobileServiceClientAppUsersUploading = new MobileServiceClient(
+                    getString(R.string.web_address),
+                    this);
+            mobileServiceClientAppUsersUploading.setAndroidHttpClientFactory(new OkHttpClientFactory() {
+                @Override
+                public OkHttpClient createOkHttpClient() {
+                    OkHttpClient client = new OkHttpClient();
+                    client.setReadTimeout(20, TimeUnit.SECONDS);
+                    client.setWriteTimeout(20, TimeUnit.SECONDS);
+                    return client;
+                }
+            });
+            mobileServiceTableAppUsers = mobileServiceClientAppUsersUploading.getTable(AppUsers.class);
 
 
+        } catch (MalformedURLException e) {
+
+        } catch (Exception e) {
+
+        }
+
+    }
+    private void uploadAppUserData(){
+
+        firebaseAuthAppUser = FirebaseAuth.getInstance();
+        appUsers = new AppUsers();
+        appUsers.setFirebaseid(firebaseAuthAppUser.getCurrentUser().getUid());
+        appUsers.setAppname(getString(R.string.app_id));
+
+        try {
+            mobileServiceTableAppUsers.insert(appUsers);
+
+
+        }
+        catch (Exception e){
+
+        }
+    }
 
 }

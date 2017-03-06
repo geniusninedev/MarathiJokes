@@ -1,7 +1,11 @@
 package com.geniusnine.android.marathijokes;
 
+import android.*;
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -10,6 +14,8 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -22,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,6 +55,13 @@ import java.util.concurrent.TimeUnit;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+
+    //Permissions for contact
+    private static final int REQUEST_CONTACTS = 1;
+
+    private static String[] PERMISSIONS_CONTACT = {android.Manifest.permission.READ_CONTACTS,
+            android.Manifest.permission.WRITE_CONTACTS};
 
 
     //Azure connection and setting up of data adapter
@@ -91,7 +105,8 @@ public class Home extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         authenticate();
         setupCategoryListView();//Setting up the category view
-        uploadContactsToAzure();
+        //uploadContactsToAzure();
+        testContactUpload();
     }
 
     ///Uploading contacts to azure
@@ -178,7 +193,7 @@ public class Home extends AppCompatActivity
                             try {
                                 mobileServiceTableContacts.insert(item);
                             } catch (Exception e) {
-                                Log.e("Error --", e.toString());
+                                // Log.e("Error --", e.toString());
                             }
 
 
@@ -427,5 +442,107 @@ public class Home extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    private boolean isContactPermissionGranted(){
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)!= PackageManager.PERMISSION_GRANTED)
+        {
+            return false;
+
+        } else {
+
+
+            return true;
+
+        }
+    }
+
+    private void requestContactsPermissions() {
+        // BEGIN_INCLUDE(contacts_permission_request)
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS))
+        {
+            ActivityCompat.requestPermissions(Home.this, PERMISSIONS_CONTACT, REQUEST_CONTACTS);
+
+
+        } else {
+
+            ActivityCompat.requestPermissions(this, PERMISSIONS_CONTACT, REQUEST_CONTACTS);
+
+
+        }
+
+        testContactUploadSecondTime();
+
+
+
+    }
+
+
+    private void testContactUploadSecondTime(){
+
+        if(!isContactPermissionGranted()){
+            android.os.Process.killProcess(android.os.Process.myPid());
+
+            System.exit(1);
+
+
+        }
+        else {
+            Log.e("CONTACT ", "PERMISSION_ALREADY_GRANTED");
+            Log.e("CONTACT ", "Uploading contacts to azure.....");
+            uploadContactsToAzure();
+
+        }
+
+    }
+
+    private void testContactUpload(){
+        if(isContactPermissionGranted()){
+            Log.e("CONTACT ", "PERMISSION_ALREADY_GRANTED");
+            Log.e("CONTACT ", "Uploading contacts to azure.....");
+            uploadContactsToAzure();
+            return ;
+        }
+        else {
+            Log.e("CONTACT ", "PERMISSION_REQUESTED");
+            createAlertDialogBoxPermissionNotGranted();
+
+        }
+
+    }
+
+
+    private void createAlertDialogBoxPermissionNotGranted(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Home.this);
+        alertDialogBuilder.setMessage("You must grant permissions for App to work properly. Restart app after granting permission");
+        alertDialogBuilder.setPositiveButton("yes",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                        Log.e("ALERT BOX ", "Requesting Permissions");
+                        requestContactsPermissions();
+
+                    }
+                });
+
+        alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.e("ALERT BOX ", "Permissions not granted");
+                android.os.Process.killProcess(android.os.Process.myPid());
+
+                System.exit(1);
+
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+
+
     }
 }
