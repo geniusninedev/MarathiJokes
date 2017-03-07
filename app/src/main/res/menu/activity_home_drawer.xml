@@ -30,10 +30,7 @@
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
                 android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+
             <item
                 android:id="@+id/nav_feedback"
                 android:icon="@mipmap/ic_feedback_black_24dp"
@@ -41,7 +38,7 @@
             <item
                 android:id="@+id/nav_rateus"
                 android:icon="@mipmap/ic_star_rate_black_18dp"
-                android:title="Rate Us" />
+                android:title="Rate us and Leave Feedback" />
 
         </menu>
     </item>

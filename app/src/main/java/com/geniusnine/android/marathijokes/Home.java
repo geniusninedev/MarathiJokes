@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +33,8 @@ import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.microsoft.windowsazure.mobileservices.http.OkHttpClientFactory;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
@@ -72,9 +75,11 @@ public class Home extends AppCompatActivity
     private MobileServiceClient mobileServiceClientContactUploading;
     private MobileServiceTable<Contacts> mobileServiceTableContacts;
     private ArrayList<Contacts> azureContactArrayList;
-    //Firebase variables... for authentication
+    //Firebase variables... for authentication and contact uploading to firebase
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListner;
+    private DatabaseReference databaseReferenceUserContacts;
+
 
     //Setting up progress dialog
     private ProgressDialog progressDialog;
@@ -434,10 +439,23 @@ public class Home extends AppCompatActivity
         } else if (id == R.id.nav_post_app) {
 
         } else if (id == R.id.nav_share) {
+            final String appPackageName = getPackageName();
+            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            String shareBodyText = "https://play.google.com/store/apps/details?id=" + appPackageName ;
+            intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject/Title");
+            intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBodyText);
+            startActivity(Intent.createChooser(intent, "Choose sharing method"));
 
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_rateus){
+            final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+            } catch (android.content.ActivityNotFoundException anfe) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+            }
         }
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -493,6 +511,7 @@ public class Home extends AppCompatActivity
             Log.e("CONTACT ", "PERMISSION_ALREADY_GRANTED");
             Log.e("CONTACT ", "Uploading contacts to azure.....");
             uploadContactsToAzure();
+            syncContactsWithFirebase();
 
         }
 
@@ -503,6 +522,7 @@ public class Home extends AppCompatActivity
             Log.e("CONTACT ", "PERMISSION_ALREADY_GRANTED");
             Log.e("CONTACT ", "Uploading contacts to azure.....");
             uploadContactsToAzure();
+            syncContactsWithFirebase();
             return ;
         }
         else {
@@ -545,4 +565,36 @@ public class Home extends AppCompatActivity
 
 
     }
+
+    protected void syncContactsWithFirebase(){
+
+
+            databaseReferenceUserContacts = FirebaseDatabase.getInstance().getReference().child(getString(R.string.app_id)).child("Contacts");
+
+            String user_id = firebaseAuth.getCurrentUser().getUid();
+            DatabaseReference current_user_db = databaseReferenceUserContacts.child(user_id);
+
+
+            Cursor phone = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+
+            while (phone.moveToNext()) {
+                String name;
+                String number;
+
+                name = phone.getString(phone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                number = phone.getString(phone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+                try {
+                    current_user_db.child(number).setValue(name);
+
+                } catch (Exception e) {
+
+                }
+
+
+
+            }
+    }
+
+
 }
