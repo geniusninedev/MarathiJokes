@@ -346,7 +346,7 @@ public class Home extends AppCompatActivity
     public void showAll() {
 
         progressDialog = new ProgressDialog(Home.this);
-        progressDialog.setMessage("Syncing online data. You may turn off internet to avoid this.");
+        progressDialog.setMessage("Syncing online data. You may turn off internet/click anywhere to avoid this.");
         progressDialog.show();
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
             @Override
@@ -435,8 +435,16 @@ public class Home extends AppCompatActivity
         } else if (id == R.id.nav_news) {
 
         } else if (id == R.id.nav_app_store) {
+            final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://developer?id=GeniusNine+Info+Systems+LLP" )));
+            } catch (android.content.ActivityNotFoundException anfe) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/developer?id=GeniusNine+Info+Systems+LLP" )));
+            }
 
         } else if (id == R.id.nav_post_app) {
+            Intent intent = new Intent(Home.this, RequestApp.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_share) {
             final String appPackageName = getPackageName();
@@ -454,6 +462,10 @@ public class Home extends AppCompatActivity
             } catch (android.content.ActivityNotFoundException anfe) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
             }
+        }else if (id == R.id.nav_feedback) {
+            Intent intent = new Intent(Home.this, UserFeedback.class);
+            startActivity(intent);
+
         }
 
 

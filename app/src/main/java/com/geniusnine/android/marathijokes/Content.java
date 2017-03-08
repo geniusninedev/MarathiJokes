@@ -151,7 +151,7 @@ public class Content extends AppCompatActivity {
     public void showAll(String cat) {
 
         progressDialog = new ProgressDialog(Content.this);
-        progressDialog.setMessage("Syncing online data. You may turn off internet to avoid this.");
+        progressDialog.setMessage("Syncing online data. You may turn off internet/click anywhere to avoid this.");
         progressDialog.show();final String categoryId = cat;
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
