@@ -174,8 +174,10 @@ public class Content extends AppCompatActivity {
                                 progressDialog.dismiss();
                             }
                             dataBinder();
+
                         }
                     });
+
                 } catch (Exception exception) {
                     //createAndShowDialog(exception, "Error");
                 }
@@ -234,8 +236,8 @@ public class Content extends AppCompatActivity {
         };
         adapterWrapper.setAdapter(contentAdapter);
         adapterWrapper.setLimitOfAds(100);
-        adapterWrapper.setNoOfDataBetweenAds(1);
-        adapterWrapper.setFirstAdIndex(2);
+        adapterWrapper.setNoOfDataBetweenAds(5);
+        adapterWrapper.setFirstAdIndex(3);
         recyclerViewContent.setAdapter(adapterWrapper);
     }
 

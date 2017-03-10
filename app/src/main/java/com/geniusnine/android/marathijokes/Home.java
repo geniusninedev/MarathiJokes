@@ -433,7 +433,8 @@ public class Home extends AppCompatActivity
         if (id == R.id.nav_forum) {
             // Handle the camera action
         } else if (id == R.id.nav_news) {
-
+            Intent intent = new Intent(Home.this, NewsFeeds.class);
+            startActivity(intent);
         } else if (id == R.id.nav_app_store) {
             final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
             try {

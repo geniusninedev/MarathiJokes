@@ -53,7 +53,9 @@
         <activity android:name=".Content" />
         <activity android:name=".Login" />
         <activity android:name=".UserFeedback" />
-        <activity android:name=".RequestApp"></activity>
+        <activity android:name=".RequestApp" />
+        <activity android:name=".NewsFeeds" />
+        <activity android:name=".WebViewNews"></activity>
     </application>
 
 </manifest>
