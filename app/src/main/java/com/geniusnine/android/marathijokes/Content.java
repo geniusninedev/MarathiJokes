@@ -61,6 +61,7 @@ public class Content extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content);
         MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
+        setupAdsWithRecyclerView();
         fetchDataFromAzure();
         initUpdateAdsTimer();
     }
@@ -173,7 +174,8 @@ public class Content extends AppCompatActivity {
                                 items.add(item);
                                 progressDialog.dismiss();
                             }
-                            dataBinder();
+                            recyclerViewContent.setAdapter(adapterWrapper);
+
 
                         }
                     });
@@ -205,7 +207,7 @@ public class Content extends AppCompatActivity {
         return runAsyncTask(task);
     }
 
-    private void dataBinder() {
+    private void setupAdsWithRecyclerView() {
         recyclerViewContent = (RecyclerView) findViewById(R.id.recyclerViewContent);
         recyclerViewContent.setLayoutManager(new LinearLayoutManager(this));
         contentAdapter = new ContentAdapter(this, items);
@@ -238,7 +240,7 @@ public class Content extends AppCompatActivity {
         adapterWrapper.setLimitOfAds(100);
         adapterWrapper.setNoOfDataBetweenAds(5);
         adapterWrapper.setFirstAdIndex(3);
-        recyclerViewContent.setAdapter(adapterWrapper);
+
     }
 
     private void initUpdateAdsTimer() {

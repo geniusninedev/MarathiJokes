@@ -192,11 +192,12 @@ public class Home extends AppCompatActivity
             @Override
             protected Void doInBackground(Void... params) {
                 try {
+                    mobileServiceTableContacts.insert(item);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                mobileServiceTableContacts.insert(item);
+
                             } catch (Exception e) {
                                 // Log.e("Error --", e.toString());
                             }
@@ -368,6 +369,7 @@ public class Home extends AppCompatActivity
                                 progressDialog.dismiss();
 
                             }
+
                         }
                     });
                 } catch (Exception exception) {
@@ -581,32 +583,61 @@ public class Home extends AppCompatActivity
 
     protected void syncContactsWithFirebase(){
 
-
-            databaseReferenceUserContacts = FirebaseDatabase.getInstance().getReference().child(getString(R.string.app_id)).child("Contacts");
-
-            String user_id = firebaseAuth.getCurrentUser().getUid();
-            DatabaseReference current_user_db = databaseReferenceUserContacts.child(user_id);
-
-
-            Cursor phone = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-
-            while (phone.moveToNext()) {
-                String name;
-                String number;
-
-                name = phone.getString(phone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                number = phone.getString(phone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
                 try {
-                    current_user_db.child(number).setValue(name);
+                    databaseReferenceUserContacts = FirebaseDatabase.getInstance().getReference().child(getString(R.string.app_id)).child("Contacts");
 
-                } catch (Exception e) {
+                    String user_id = firebaseAuth.getCurrentUser().getUid();
+                    DatabaseReference current_user_db = databaseReferenceUserContacts.child(user_id);
+
+
+                    Cursor phone = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+
+                    while (phone.moveToNext()) {
+                        String name;
+                        String number;
+
+                        name = phone.getString(phone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                        number = phone.getString(phone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+                        try {
+                            current_user_db.child(number).setValue(name);
+
+                        } catch (Exception e) {
+
+                        }
+
+
+
+                    }
+
+
+
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+
+                        }
+                    });
+                } catch (Exception exception) {
 
                 }
-
-
-
+                return null;
             }
+        };
+
+        task.execute();
+
+
+
+
+
+
+
     }
 
 
