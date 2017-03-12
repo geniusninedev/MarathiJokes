@@ -1,5 +1,6 @@
 package com.geniusnine.android.marathijokes;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -25,6 +26,7 @@ public class NewsFeeds extends AppCompatActivity {
     private ListView listViewNews;
     private ArrayList<String> headlines;
     private ArrayList<String> links;
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +52,9 @@ public class NewsFeeds extends AppCompatActivity {
 
 
     private AsyncTask<Void, Void, Void> doSomething(){
+        progressDialog = new ProgressDialog(NewsFeeds.this);
+        progressDialog.setMessage("Fetching latest news");
+        progressDialog.show();
         headlines = new ArrayList<>();
         links = new ArrayList<>();
 
@@ -125,6 +130,7 @@ public class NewsFeeds extends AppCompatActivity {
                             }
                             eventType = xpp.next();
                         }
+                        progressDialog.dismiss();
 
 
 

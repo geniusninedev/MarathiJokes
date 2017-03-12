@@ -68,7 +68,7 @@ public class Content extends AppCompatActivity {
 
     private void fetchDataFromAzure() {
         Intent intent = getIntent();
-        String cat = intent.getStringExtra("category");
+        final String cat = intent.getStringExtra("category");
 
 
         try {
@@ -93,7 +93,9 @@ public class Content extends AppCompatActivity {
             initLocalStore().get();
 
 
-            showAll(cat);
+                        showAll(cat);
+
+
 
 
         } catch (MalformedURLException e) {
@@ -153,7 +155,8 @@ public class Content extends AppCompatActivity {
 
         progressDialog = new ProgressDialog(Content.this);
         progressDialog.setMessage("Syncing online data. You may turn off internet/click anywhere to avoid this.");
-        progressDialog.show();final String categoryId = cat;
+        progressDialog.show();
+        final String categoryId = cat;
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
             @Override
